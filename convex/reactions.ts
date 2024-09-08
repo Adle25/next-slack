@@ -46,7 +46,7 @@ export const toggle = mutation({
             const newReactionId = await ctx.db.insert("reactions", {
                 value: args.value,
                 memberId: member._id,
-                messageId: args.messageId,
+                messageId: message._id,
                 workspaceId: message.workspaceId
             })
             return newReactionId;
