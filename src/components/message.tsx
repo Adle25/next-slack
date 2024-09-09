@@ -12,6 +12,7 @@ import { useRemoveMessage } from "@/features/messages/api/use-remove-message";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useToggleReaction } from "@/features/reactions/api/use-toggle-reaction";
 import { Reactions } from "./reactions";
+import { usePanel } from "@/hooks/use-panel";
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -42,6 +43,8 @@ interface MessageProps {
 
 export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Member", reactions, body, image, createdAt, updatedAt, isEditing, isCompact, setEditingId, hideThreadButton, threadCount, threadImage, threadTimestamp }: MessageProps) => {
     const avatarFallback = authorName.charAt(0).toUpperCase();
+
+    const { onOpenMessage, onClose, parentMessageId } = usePanel();
 
     const [ConfirmDialog, confirm] = useConfirm(
         "Delete message",
@@ -75,6 +78,10 @@ export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Mem
         removeMessage({ id }, {
             onSuccess: () => {
                 toast.success("Message deleted");
+
+                if (parentMessageId === id) {
+                    onClose();
+                }
             },
             onError: () => {
                 toast.error("Failed to delete message");
@@ -126,7 +133,7 @@ export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Mem
                         isAuthor={isAuthor}
                         isPending={isPending}
                         handleEdit={() => setEditingId(id)}
-                        handleThread={() => { }}
+                        handleThread={() => onOpenMessage(id)}
                         handleDelete={handleRemove}
                         handleReaction={handleReaction}
                         hideThreadButton={hideThreadButton}
@@ -186,7 +193,7 @@ export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Mem
                         isAuthor={isAuthor}
                         isPending={isPending}
                         handleEdit={() => setEditingId(id)}
-                        handleThread={() => { }}
+                        handleThread={() => onOpenMessage(id)}
                         handleDelete={handleRemove}
                         handleReaction={handleReaction}
                         hideThreadButton={hideThreadButton}
