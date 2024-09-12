@@ -13,6 +13,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useToggleReaction } from "@/features/reactions/api/use-toggle-reaction";
 import { Reactions } from "./reactions";
 import { usePanel } from "@/hooks/use-panel";
+import { ThreadBar } from "./thread-bar";
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
@@ -38,10 +39,11 @@ interface MessageProps {
     hideThreadButton?: boolean;
     threadCount?: number;
     threadImage?: string;
+    threadName?: string;
     threadTimestamp?: number;
 };
 
-export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Member", reactions, body, image, createdAt, updatedAt, isEditing, isCompact, setEditingId, hideThreadButton, threadCount, threadImage, threadTimestamp }: MessageProps) => {
+export const Message = ({ id, isAuthor, memberId, threadName, authorImage, authorName = "Member", reactions, body, image, createdAt, updatedAt, isEditing, isCompact, setEditingId, hideThreadButton, threadCount, threadImage, threadTimestamp }: MessageProps) => {
     const avatarFallback = authorName.charAt(0).toUpperCase();
 
     const { onOpenMessage, onClose, parentMessageId } = usePanel();
@@ -126,6 +128,13 @@ export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Mem
                                     <span className="text-xs text-muted-foreground">(edited)</span>
                                 ) : null}
                                 <Reactions data={reactions} onChange={handleReaction} />
+                                <ThreadBar
+                                    count={threadCount}
+                                    image={threadImage}
+                                    timestamp={threadTimestamp}
+                                    name={threadName}
+                                    onClick={() => onOpenMessage(id)}
+                                />
                             </div>
                         )}
                     </div>
@@ -185,6 +194,13 @@ export const Message = ({ id, isAuthor, memberId, authorImage, authorName = "Mem
                                 <span className="text-xs text-muted-foreground">(edited)</span>
                             ) : null}
                             <Reactions data={reactions} onChange={handleReaction} />
+                            <ThreadBar
+                                count={threadCount}
+                                image={threadImage}
+                                timestamp={threadTimestamp}
+                                name={threadName}
+                                onClick={() => onOpenMessage(id)}
+                            />
                         </div>
                     )}
                 </div>
